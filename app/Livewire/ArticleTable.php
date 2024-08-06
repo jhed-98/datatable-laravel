@@ -6,6 +6,10 @@ use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Article;
 use Illuminate\Database\Eloquent\Builder;
+use Rappasoft\LaravelLivewireTables\Views\Columns\BooleanColumn;
+use Rappasoft\LaravelLivewireTables\Views\Columns\ButtonGroupColumn;
+use Rappasoft\LaravelLivewireTables\Views\Columns\ImageColumn;
+use Rappasoft\LaravelLivewireTables\Views\Columns\LinkColumn;
 
 class ArticleTable extends DataTableComponent
 {
@@ -22,22 +26,61 @@ class ArticleTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("Id", "id")
+            Column::make("ID", "id")
                 ->sortable(),
             Column::make("Title", "title")
                 ->sortable(),
-            Column::make("Content", "content")
+            Column::make("User id", "user.name")
                 ->sortable(),
-            Column::make("User id", "user_id")
+            ///Usamos el componente q nos brinda o podemos personalizar
+            BooleanColumn::make("Is published", "is_published")
+                // ->setSuccessValue(false) ///Para invertir - pero no es necesario
+                // ->yesNo()
+                ->setView('components.check_published') ///component personalizado
                 ->sortable(),
-            Column::make("Is published", "is_published")
-                ->sortable(),
-            Column::make("Sort", "sort")
-                ->sortable(),
+            ///Columna q muestra img
+            ImageColumn::make('Avatar')
+                ->location(
+                    // fn ($row) => storage_path('app/public/avatars/' . $row->id . '.jpg')
+                    fn ($row) => asset('avatars/testimonial-1.jpg')
+                ),
             Column::make("Created at", "created_at")
                 ->sortable(),
-            Column::make("Updated at", "updated_at")
-                ->sortable(),
+            ///Columna con enlaces
+            LinkColumn::make('Link Columns')
+                ->title(fn ($row) => 'Edit')
+                ->location(fn ($row) => route('dashboard', $row->id))
+                ->attributes(function ($row) {
+                    return [
+                        'class' => 'btn btn-blue',
+                    ];
+                }),
+            ///Columna agrupando varios botones
+            ButtonGroupColumn::make('Button Group Column')
+                ->attributes(function ($row) {
+                    return [
+                        'class' => 'space-x-2',
+                    ];
+                })
+                ->buttons([
+                    LinkColumn::make('View') // make() has no effect in this case but needs to be set anyway
+                        ->title(fn ($row) => 'View ' . $row->name)
+                        ->location(fn ($row) => route('dashboard', $row->id))
+                        ->attributes(function ($row) {
+                            return [
+                                'class' => 'btn btn-blue',
+                            ];
+                        }),
+                    LinkColumn::make('Edit')
+                        ->title(fn ($row) => 'Edit ' . $row->name)
+                        ->location(fn ($row) => route('dashboard', $row->id))
+                        ->attributes(function ($row) {
+                            return [
+                                'target' => '_blank',
+                                'class' => 'btn btn-green',
+                            ];
+                        }),
+                ]),
         ];
     }
 
