@@ -14,6 +14,7 @@ class Article extends Model
         'content',
         'user_id',
         'is_published',
+        'sort',
     ];
 
     /// Relaciones

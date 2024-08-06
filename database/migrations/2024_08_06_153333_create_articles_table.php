@@ -19,6 +19,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->boolean('is_published')->default(false);
 
+            ///posicion del articulo
+            $table->integer('sort');
+
             $table->timestamps();
         });
     }
