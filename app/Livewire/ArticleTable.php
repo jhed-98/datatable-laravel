@@ -14,6 +14,10 @@ use Rappasoft\LaravelLivewireTables\Views\Columns\ButtonGroupColumn;
 use Rappasoft\LaravelLivewireTables\Views\Columns\DateColumn;
 use Rappasoft\LaravelLivewireTables\Views\Columns\ImageColumn;
 use Rappasoft\LaravelLivewireTables\Views\Columns\LinkColumn;
+use Rappasoft\LaravelLivewireTables\Views\Filters\DateFilter;
+use Rappasoft\LaravelLivewireTables\Views\Filters\NumberFilter;
+use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
+use Rappasoft\LaravelLivewireTables\Views\Filters\TextFilter;
 
 class ArticleTable extends DataTableComponent
 {
@@ -104,6 +108,55 @@ class ArticleTable extends DataTableComponent
         }
     }
 
+    public function filters(): array
+    {
+        return [
+            SelectFilter::make('Publicado')
+                ->options([
+                    '' => 'All',
+                    '1' => 'Yes',
+                    '0' => 'No',
+                ])
+                ->filter(function ($query, $value) {
+                    if ($value != '') {
+                        $query->where('is_published', $value);
+                    }
+                }),
+
+            DateFilter::make('Desde')
+                ->config([
+                    'min' => '2024-08-01',
+                    // 'max' => '2024-08-31',
+                ])
+                ->filter(function ($query, $value) {
+                    $query->whereDate('articles.created_at', '>=', $value);
+                }),
+
+            DateFilter::make('Hasta')
+                ->filter(function ($query, $value) {
+                    $query->whereDate('articles.created_at', '<=', $value);
+                }),
+
+            NumberFilter::make('ID mayor que:')
+                ->config([
+                    'min' => 0, // Minimum Value Accepted
+                    'max' => 100, // Maximum Value Accepted
+                    'placeholder' => 'Ingrese un numero', // A placeholder value
+                ])
+                ->filter(function ($query, $value) {
+                    $query->where('articles.id', '>=', $value);
+                }),
+
+            // TextFilter::make('Titulo')
+            //     ->config([
+            //         'placeholder' => 'Buscar Titulo',
+            //         'maxlength' => '25',
+            //     ])
+            //     ->filter(function ($query, $value) {
+            //         $query->where('articles.title', 'like', '%' . $value . '%');
+            //     }),
+        ];
+    }
 
     public function configure(): void
     {
