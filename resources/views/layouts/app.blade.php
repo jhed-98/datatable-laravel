@@ -44,7 +44,19 @@
 
     @livewireScripts
 
+    {{-- Alert --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <x-livewire-alert::scripts />
+
     @stack('script')
+
+    {{-- <script>
+        Livewire.on('alert', function(message) {
+            alert(message);
+        })
+    </script> --}}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 
 </html>
